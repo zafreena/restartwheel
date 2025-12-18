@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wellness Wheel Worksheet</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1e3a8a 0%, #7c3aed 50%, #ec4899 100%);
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(236, 72, 153, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(59, 130, 246, 0.3) 0%, transparent 50%);
+            pointer-events: none;
+            animation: gradientShift 15s ease infinite;
+        }
+        
+        @keyframes gradientShift {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.3),
+                inset 0 1px 1px rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            position: relative;
+            z-index: 1;
+        }
+        
+        h1 {
+            text-align: center;
+            background: linear-gradient(135deg, #fff 0%, #e0e7ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 40px;
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+            font-weight: 300;
+        }
+        
+        .content-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: start;
+        }
+        
+        .wheel-container {
+            position: sticky;
+            top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 25px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+        
+        #wheelCanvas {
+            width: 100%;
+            max-width: 550px;
+            height: auto;
+            filter: drop-shadow(0 4px 20px rgba(0, 0, 0, 0.3));
+        }
+        
+        .score-display {
+            margin-top: 25px;
+            text-align: center;
+            font-size: clamp(1.1rem, 3vw, 1.4rem);
+            color: white;
+            font-weight: 700;
+            background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
+            padding: 15px 30px;
+            border-radius: 50px;
+            box-shadow: 0 4px 15px rgba(96, 165, 250, 0.3);
+        }
+        
+        .categories {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .category {
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .category:hover {
+            background: rgba(255, 255, 255, 0.18);
+            box-shadow: 0 8px 30px rgba(255, 255, 255, 0.15);
+            transform: translateY(-3px);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+        
+        .category-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .category-title {
+            font-size: clamp(1.1rem, 2.5vw, 1.3rem);
+            font-weight: 700;
+            color: white;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .category-subtitle {
+            color: rgba(255, 255, 255, 0.85);
+            font-size: clamp(0.85rem, 2vw, 0.95rem);
+            margin-bottom: 15px;
+            font-weight: 400;
+        }
+        
+        .criteria {
+            list-style: none;
+            margin-bottom: 20px;
+        }
+        
+        .criteria li {
+            padding: 10px 0 10px 28px;
+            color: rgba(255, 255, 255, 0.9);
+            position: relative;
+            line-height: 1.6;
+            font-size: clamp(0.9rem, 2vw, 1rem);
+        }
+        
+        .criteria li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #60a5fa;
+            font-weight: bold;
+            font-size: 1.2em;
+            text-shadow: 0 2px 8px rgba(96, 165, 250, 0.4);
+        }
+        
+        .score-input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.08);
+            padding: 15px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .score-label {
+            font-weight: 600;
+            color: white;
+            font-size: clamp(0.9rem, 2vw, 1rem);
+            min-width: 50px;
+        }
+        
+        input[type="range"] {
+            flex: 1;
+            height: 8px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            outline: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(96, 165, 250, 0.5);
+        }
+        
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.3);
+            box-shadow: 0 6px 20px rgba(96, 165, 250, 0.7);
+        }
+        
+        input[type="range"]::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(96, 165, 250, 0.5);
+        }
+        
+        input[type="range"]::-moz-range-thumb:hover {
+            transform: scale(1.3);
+            box-shadow: 0 6px 20px rgba(96, 165, 250, 0.7);
+        }
+        
+        .score-value {
+            font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+            font-weight: 700;
+            background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            min-width: 60px;
+            text-align: center;
+        }
+        
+        .print-button {
+            margin-top: 40px;
+            text-align: center;
+        }
+        
+        .print-button button {
+            background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 25px rgba(96, 165, 250, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .print-button button:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 35px rgba(96, 165, 250, 0.6);
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+        }
+        
+        .print-button button:active {
+            transform: translateY(-2px);
+        }
+        
+        @media (max-width: 1024px) {
+            .content-wrapper {
+                grid-template-columns: 1fr;
+            }
+            
+            .wheel-container {
+                position: relative;
+                order: -1;
+            }
+            
+            .container {
+                padding: 30px 20px;
+            }
+        }
+        
+        @media (max-width: 640px) {
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                padding: 25px 15px;
+                border-radius: 20px;
+            }
+            
+            .wheel-container {
+                padding: 20px 15px;
+            }
+            
+            .category {
+                padding: 20px 15px;
+            }
+            
+            .criteria li {
+                padding: 8px 0 8px 24px;
+            }
+            
+            .score-input-wrapper {
+                padding: 12px;
+            }
+        }
+        
+        @media print {
+            body {
+                background: white;
+            }
+            body::before {
+                display: none;
+            }
+            .print-button {
+                display: none;
+            }
+            .container {
+                box-shadow: none;
+                background: white;
+                color: black;
+            }
+            .category {
+                background: #f5f5f5;
+                color: black;
+            }
+            .category-title,
+            .category-subtitle,
+            .criteria li,
+            .score-label {
+                color: black;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌟 Wellness Wheel</h1>
+        <p class="subtitle">Rate your current state in each area from 0 to 6</p>
+        
+        <div class="content-wrapper">
+            <div class="wheel-container">
+                <canvas id="wheelCanvas" width="550" height="550"></canvas>
+                <div class="score-display">
+                    Overall: <span id="totalScore">0</span> / 36
+                </div>
+            </div>
+            
+            <div class="categories">
+                <div class="category">
+                    <div class="category-header">
+                        <span class="category-title">1️⃣ ENERGY & FATIGUE</span>
+                    </div>
+                    <div class="category-subtitle">How supported does your body feel?</div>
+                    <ul class="criteria">
+                        <li>I wake up feeling rested most days</li>
+                        <li>My energy lasts through most of the day</li>
+                        <li>I don't rely on caffeine just to function</li>
+                    </ul>
+                    <div class="score-input-wrapper">
+                        <span class="score-label">Score:</span>
+                        <input type="range" min="0" max="6" value="0" id="score1" class="score-slider">
+                        <span class="score-value" id="value1">0 / 6</span>
+                    </div>
+                </div>
+                
+                <div class="category">
+                    <div class="category-header">
+                        <span class="category-title">2️⃣ MOVEMENT</span>
+                    </div>
+                    <div class="category-subtitle">How safe and doable movement feels in your life</div>
+                    <ul class="criteria">
+                        <li>I move my body even on "non-workout" days</li>
+                        <li>Movement feels supportive, not punishing</li>
+                        <li>I'm not afraid of getting injured or exhausted</li>
+                    </ul>
+                    <div class="score-input-wrapper">
+                        <span class="score-label">Score:</span>
+                        <input type="range" min="0" max="6" value="0" id="score2" class="score-slider">
+                        <span class="score-value" id="value2">0 / 6</span>
+                    </div>
+                </div>
+                
+                <div class="category">
+                    <div class="category-header">
+                        <span class="category-title">3️⃣ FOOD RELATIONSHIP</span>
+                    </div>
+                    <div class="category-subtitle">Not what you eat — how you feel around food</div>
+                    <ul class="criteria">
+                        <li>I eat without guilt most days</li>
+                        <li>I don't swing between restriction and overeating</li>
+                        <li>I trust myself to make food choices</li>
+                    </ul>
+                    <div class="score-input-wrapper">
+                        <span class="score-label">Score:</span>
+                        <input type="range" min="0" max="6" value="0" id="score3" class="score-slider">
+                        <span class="score-value" id="value3">0 / 6</span>
+                    </div>
+                </div>
+                
+                <div class="category">
+                    <div class="category-header">
+                        <span class="category-title">4️⃣ CONSISTENCY & ROUTINE</span>
+                    </div>
+                    <div class="category-subtitle">Your ability to continue — not start</div>
+                    <ul class="criteria">
+                        <li>My habits fit my current lifestyle</li>
+                        <li>I can continue even when motivation is low</li>
+                        <li>One "off" day doesn't make me quit</li>
+                    </ul>
+                    <div class="score-input-wrapper">
+                        <span class="score-label">Score:</span>
+                        <input type="range" min="0" max="6" value="0" id="score4" class="score-slider">
+                        <span class="score-value" id="value4">0 / 6</span>
+                    </div>
+                </div>
+                
+                <div class="category">
+                    <div class="category-header">
+                        <span class="category-title">5️⃣ BODY AWARENESS</span>
+                    </div>
+                    <div class="category-subtitle">Listening instead of forcing</div>
+                    <ul class="criteria">
+                        <li>I notice hunger, fullness, and fatigue</li>
+                        <li>I respect pain or discomfort signals</li>
+                        <li>I adjust instead of pushing through everything</li>
+                    </ul>
+                    <div class="score-input-wrapper">
+                        <span class="score-label">Score:</span>
+                        <input type="range" min="0" max="6" value="0" id="score5" class="score-slider">
+                        <span class="score-value" id="value5">0 / 6</span>
+                    </div>
+                </div>
+                
+                <div class="category">
+                    <div class="category-header">
+                        <span class="category-title">6️⃣ MINDSET & SELF-TALK</span>
+                    </div>
+                    <div class="category-subtitle">How you speak to yourself on this journey</div>
+                    <ul class="criteria">
+                        <li>I don't constantly criticize my body</li>
+                        <li>I believe change can be gentle</li>
+                        <li>I don't label myself as "lazy" or "failed"</li>
+                    </ul>
+                    <div class="score-input-wrapper">
+                        <span class="score-label">Score:</span>
+                        <input type="range" min="0" max="6" value="0" id="score6" class="score-slider">
+                        <span class="score-value" id="value6">0 / 6</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="print-button">
+            <button onclick="window.print()">🖨️ Print Worksheet</button>
+        </div>
+    </div>
+    
+    <script>
+        const canvas = document.getElementById('wheelCanvas');
+        const ctx = canvas.getContext('2d');
+        const dpr = window.devicePixelRatio || 1;
+        
+        // Set canvas size based on device
+        function resizeCanvas() {
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = 550 * dpr;
+            canvas.height = 550 * dpr;
+            ctx.scale(dpr, dpr);
+            drawWheel();
+        }
+        
+        const centerX = 275;
+        const centerY = 275;
+        const maxRadius = 165;
+        
+        const categories = [
+            { short: 'Energy &\nFatigue', full: 'Energy & Fatigue' },
+            { short: 'Movement', full: 'Movement' },
+            { short: 'Food\nRelationship', full: 'Food Relationship' },
+            { short: 'Consistency\n& Routine', full: 'Consistency & Routine' },
+            { short: 'Body\nAwareness', full: 'Body Awareness' },
+            { short: 'Mindset &\nSelf-Talk', full: 'Mindset & Self-Talk' }
+        ];
+        
+        const colors = [
+            '#60a5fa',
+            '#a78bfa',
+            '#f472b6',
+            '#fb923c',
+            '#34d399',
+            '#fbbf24'
+        ];
+        
+        let scores = [0, 0, 0, 0, 0, 0];
+        
+        function wrapText(text, x, y, maxWidth, lineHeight) {
+            const lines = text.split('\n');
+            lines.forEach((line, index) => {
+                ctx.fillText(line, x, y + (index * lineHeight));
+            });
+        }
+        
+        function drawWheel() {
+            ctx.clearRect(0, 0, 550, 550);
+            
+            // Draw concentric circles with gradient
+            for (let i = 1; i <= 6; i++) {
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, (maxRadius / 6) * i, 0, 2 * Math.PI);
+                ctx.strokeStyle = `rgba(255, 255, 255, ${0.15 + (i * 0.05)})`;
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+            }
+            
+            // Draw spokes
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+            ctx.lineWidth = 1.5;
+            for (let i = 0; i < 6; i++) {
+                const angle = (Math.PI * 2 / 6) * i - Math.PI / 2;
+                const x = centerX + Math.cos(angle) * maxRadius;
+                const y = centerY + Math.sin(angle) * maxRadius;
+                
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.lineTo(x, y);
+                ctx.stroke();
+            }
+            
+            // Draw labels with better positioning
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 14px Inter, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+            ctx.shadowBlur = 8;
+            
+            for (let i = 0; i < 6; i++) {
+                const angle = (Math.PI * 2 / 6) * i - Math.PI / 2;
+                const labelRadius = maxRadius + 45;
+                const x = centerX + Math.cos(angle) * labelRadius;
+                const y = centerY + Math.sin(angle) * labelRadius;
+                
+                wrapText(categories[i].short, x, y, 100, 18);
+            }
+            
+            ctx.shadowBlur = 0;
+            
+            // Draw score levels
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+            ctx.font = '12px Inter, sans-serif';
+            for (let i = 1; i <= 6; i++) {
+                ctx.fillText(i.toString(), centerX + 8, centerY - (maxRadius / 6) * i);
+            }
+            
+            // Draw filled area with gradient
+            if (scores.some(s => s > 0)) {
+                ctx.beginPath();
+                for (let i = 0; i < 6; i++) {
+                    const angle = (Math.PI * 2 / 6) * i - Math.PI / 2;
+                    const radius = (scores[i] / 6) * maxRadius;
+                    const x = centerX + Math.cos(angle) * radius;
+                    const y = centerY + Math.sin(angle) * radius;
+                    
+                    if (i === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                }
+                ctx.closePath();
+                
+                const gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, maxRadius);
+                gradient.addColorStop(0, 'rgba(96, 165, 250, 0.5)');
+                gradient.addColorStop(0.5, 'rgba(167, 139, 250, 0.4)');
+                gradient.addColorStop(1, 'rgba(244, 114, 182, 0.3)');
+                ctx.fillStyle = gradient;
+                ctx.fill();
+                
+                // Stroke with gradient
+                const strokeGradient = ctx.createLinearGradient(0, 0, 550, 550);
+                strokeGradient.addColorStop(0, '#60a5fa');
+                strokeGradient.addColorStop(0.5, '#a78bfa');
+                strokeGradient.addColorStop(1, '#f472b6');
+                ctx.strokeStyle = strokeGradient;
+                ctx.lineWidth = 3;
+                ctx.shadowColor = 'rgba(96, 165, 250, 0.5)';
+                ctx.shadowBlur = 10;
+                ctx.stroke();
+                ctx.shadowBlur = 0;
+                
+                // Draw points
+                for (let i = 0; i < 6; i++) {
+                    const angle = (Math.PI * 2 / 6) * i - Math.PI / 2;
+                    const radius = (scores[i] / 6) * maxRadius;
+                    const x = centerX + Math.cos(angle) * radius;
+                    const y = centerY + Math.sin(angle) * radius;
+                    
+                    ctx.beginPath();
+                    ctx.arc(x, y, 7, 0, 2 * Math.PI);
+                    ctx.fillStyle = colors[i];
+                    ctx.fill();
+                    ctx.strokeStyle = 'white';
+                    ctx.lineWidth = 3;
+                    ctx.shadowColor = colors[i];
+                    ctx.shadowBlur = 10;
+                    ctx.stroke();
+                    ctx.shadowBlur = 0;
+                }
+            }
+        }
+        
+        function updateScore(index, value) {
+            scores[index] = parseInt(value);
+            document.getElementById(`value${index + 1}`).textContent = `${value} / 6`;
+            
+            const total = scores.reduce((a, b) => a + b, 0);
+            document.getElementById('totalScore').textContent = total;
+            
+            drawWheel();
+        }
+        
+        // Initialize sliders
+        for (let i = 1; i <= 6; i++) {
+            const slider = document.getElementById(`score${i}`);
+            slider.addEventListener('input', (e) => {
+                updateScore(i - 1, e.target.value);
+            });
+        }
+        
+        // Initial draw and handle resize
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+    </script>
+</body>
+</html>
